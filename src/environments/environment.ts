@@ -3,7 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false,
+  production: true,
   apiKey: 'a419bedf58dd4703991142ff40691774',
   infuraURL: 'https://goerli.infura.io/v3/'
 };
