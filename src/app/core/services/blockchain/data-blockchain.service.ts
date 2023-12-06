@@ -37,7 +37,7 @@ export class DataBlockchainService {
       password : "123456"
     }
 
-    return this.http.post<any>('http://sandbox-eda.lineadecodigo.net/v1/auth/login', body, {
+    return this.http.post<any>('https://sandbox-eda.lineadecodigo.net/v1/auth/login', body, {
       headers: this.getHeaders(1)
     })
       .pipe(map(
@@ -47,7 +47,7 @@ export class DataBlockchainService {
   }
 
   sendDataToBlockchain(name:any, hash:any, token: any ){
-    const endpoint = 'http://sandbox-eda.lineadecodigo.net/v1/transaction/resources/assets';
+    const endpoint = 'https://sandbox-eda.lineadecodigo.net/v1/transaction/resources/assets';
     const body = JSON.stringify({
      name: name,
      hash: hash
