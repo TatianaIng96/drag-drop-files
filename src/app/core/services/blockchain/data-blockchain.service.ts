@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MessageService } from 'primeng/api';
-import { map, pipe } from 'rxjs';
+import { Observable, map, pipe } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -14,24 +14,46 @@ export class DataBlockchainService {
 
   constructor(private http: HttpClient) { }
 
-  sendDataToBlockchain(data: any){
+  getHeaders(req: number): HttpHeaders{
+    if(req === 1){
+        return new HttpHeaders({
+          "Content-Type": "application/json"
+          }
+        )
+    }else{
+      return new HttpHeaders({
+        "Content-Type": "application/json",
+        "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOnsidXNlciI6IjYzZmNlNDgwZjIzNDY5MWYyNjU0YjkzZCIsIm9yZ2FuaXphdGlvbiI6IjYzZmNlNDdlNmVmNmQ5ZmQ5ODM2MjA1ZCJ9LCJpYXQiOjE3MDE4MjkyNjQsImV4cCI6MTcwNzAxMzI2NH0.JbfiDebhV3N-IqbnPVg4iPWxHDQzUoPOjxYd6zTrPKY"
+        }
+      )
+    }
+  }
 
-    const endpoint = `${this.infuraUrl}${this.infuraApiKey}`;
+  loginBlockchainNetwork(): Observable<any>{
+    const body = {
+      email : "support@lineadecodigo.net",
+      password : "123456"
+    }
+
+    return this.http.post<any>('/v1/auth/login', body, {
+      headers: this.getHeaders(1)
+    })
+      .pipe(map(
+        (response)=> response,
+        (error:any)=> error
+      ));
+  }
+
+  sendDataToBlockchain(name:any, hash:any, token: any ){
+    const endpoint = '/v1/transaction/resources/assets';
     const body = JSON.stringify({
-
-      to: '0x11B52421dbb9c9772D4700F81E3ac1CeCB71A8b8',
-      value: 500000000000, // Recuerda convertir el valor a Wei (1 Ether = 10^18 Wei)
-      gas: 21000, // Puedes estimar el gas necesario para la transacción
-      gasPrice: 1000000000,
-      data: data
-      // Otros campos de la transacción como data, nonce, etc., según sea necesario
+     name: name,
+     hash: hash
     });
-
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-
-    return this.http.post<any>(endpoint, body, { headers })
+    console.log("hash: ", hash, " name: ", name);
+    return this.http.post<any>(endpoint, body, {
+      headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${token}`}
+    })
       .pipe(map(
         (response)=> response,
         (error:any)=> error

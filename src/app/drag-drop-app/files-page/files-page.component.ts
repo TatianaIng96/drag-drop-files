@@ -26,30 +26,36 @@ export class FilesPageComponent implements OnInit {
 
     for(let file of this.uploadedFiles){
       const reader = new FileReader();
-      reader.onloadend = async (event)=>{
+      let token = '';
+      reader.onload = async (event)=>{
         if (reader.readyState == FileReader.DONE){
           const resultArray = event.target?.result;
-          const hash = CryptoJS.SHA256(this.arrayBufferToWordArray(resultArray));
-          const final = await lastValueFrom (this.blockchain.sendDataToBlockchain(hash));
-          if(final){
-            this.messageService.add({severity: 'success', summary: 'File Uploaded', detail: 'Hash file request sent to blockchain network.'});
+          const hash = CryptoJS.SHA256(CryptoJS.enc.Latin1.parse(<string>resultArray));
+          const SHA = hash.toString(CryptoJS.enc.Hex);
+          this.blockchain.loginBlockchainNetwork().subscribe(response =>{
+            console.log(response);
+            token = response.data;
+            this.messageService.add({severity: 'success', summary: 'Logged', detail: 'You are logged now.'});
+            this.sendToBlockchain(file.name, SHA, token);
+          }, error =>{
+            console.log(error)
+          });
+
           }else{
-            this.messageService.add({severity: 'error', summary: 'Exception', detail: 'Exception ocurred while sending file request to blockchain.'});
+
           }
+
         }
+        reader.readAsBinaryString(file);
       }
 
-      reader.readAsBinaryString(file);
+    }
+
+    sendToBlockchain(file: any, SHA:string, token: string){
+      this.blockchain.sendDataToBlockchain(file, SHA, token).subscribe(response =>{
+        this.messageService.add({severity: 'success', summary: 'File Uploaded', detail: 'Hash file request sent to blockchain network.'});
+      }, error =>{
+        this.messageService.add({severity: 'error', summary: 'Exception', detail: 'Exception ocurred while sending file request to blockchain.'});
+      });
     }
   }
-
-  arrayBufferToWordArray(fileResult: any) {
-    var i8a = new Uint8Array(fileResult);
-    var a = [];
-    for (var i = 0; i < i8a.length; i += 4) {
-      a.push(i8a[i] << 24 | i8a[i + 1] << 16 | i8a[i + 2] << 8 | i8a[i + 3]);
-    }
-    return CryptoJS.lib.WordArray.create(a, i8a.length);
-  }
-
-}
