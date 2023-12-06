@@ -1,7 +1,10 @@
 {
+  "rewrites": [
+    { "source": "/api/:match*", "destination": "http://sandbox-eda.lineadecodigo.net/:match*" }
+  ],
   "headers": [
     {
-      "source": "/v1/auth/login",
+      "source": "v1/auth/login",
       "headers": [
         { "key": "Access-Control-Allow-Credentials", "value": "true" },
         { "key": "Access-Control-Allow-Origin", "value": "*" },
@@ -10,7 +13,7 @@
       ]
     },
     {
-      "source": "/v1/transaction/resources/assets",
+      "source": "v1/transaction/resources/assets",
       "headers": [
         { "key": "Access-Control-Allow-Credentials", "value": "true" },
         { "key": "Access-Control-Allow-Origin", "value": "*" },
