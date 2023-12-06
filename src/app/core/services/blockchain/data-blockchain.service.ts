@@ -17,7 +17,9 @@ export class DataBlockchainService {
   getHeaders(req: number): HttpHeaders{
     if(req === 1){
         return new HttpHeaders({
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Methods":"*",
+          "Access-Control-Request-Method": "POST"
           }
         )
     }else{
